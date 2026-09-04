@@ -78,7 +78,7 @@ MeetLink solves these issues by combining a Socket.IO signaling server with WebR
 
 ### Meeting History
 
-![Meeting History](docs/screenshots/history.png)
+![Meeting History](docs/screenshots/meetinghistory.png)
 
 ## Tech Stack
 
