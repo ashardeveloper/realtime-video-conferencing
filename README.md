@@ -58,6 +58,28 @@ MeetLink solves these issues by combining a Socket.IO signaling server with WebR
 - Production deployment compatibility on Render
 - Protected history and authentication flows
 
+## Screenshots
+
+### Landing Page
+
+![Landing Page](docs/screenshots/landingpage.png)
+
+### Login & Signup
+
+![Login & Signup](docs/screenshots/auth.png)
+
+### Meeting Lobby
+
+![Meeting Lobby](docs/screenshots/meetinglobby.png)
+
+### Meeting Room
+
+![Meeting Room](docs/screenshots/meetingroom.png)
+
+### Meeting History
+
+![Meeting History](docs/screenshots/history.png)
+
 ## Tech Stack
 
 ### Frontend
