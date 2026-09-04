@@ -1215,3 +1215,142 @@
     width: 100%;
   }
 }
+
+/* Lobby mobile alignment fix */
+@media (max-width: 900px) {
+  .lobbyPage {
+    min-height: 100svh;
+    padding: 28px 18px 36px;
+    overflow-x: hidden;
+  }
+
+  .lobbyNav {
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    margin-bottom: 44px;
+  }
+
+  .lobbyBrand {
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .lobbyBrandIcon {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+  }
+
+  .lobbyBrandIcon svg {
+    font-size: 30px;
+  }
+
+  .lobbyBrand h2 {
+    font-size: clamp(2rem, 9vw, 3.2rem);
+  }
+
+  .lobbyShell {
+    width: 100%;
+    min-height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .lobbyPanel {
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  .lobbyPanel h1 {
+    text-align: left;
+    font-size: clamp(2.5rem, 11vw, 4rem);
+    line-height: 1.05;
+  }
+
+  .lobbySubtitle {
+    max-width: 100%;
+    margin: 22px 0 44px;
+    font-size: clamp(1rem, 4.5vw, 1.35rem);
+    line-height: 1.45;
+  }
+
+  .lobbyFieldGroup {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .lobbyFieldGroup label {
+    font-size: 1rem;
+  }
+
+  .lobbyInputWrap {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .readyCard {
+    width: 100%;
+    box-sizing: border-box;
+    align-items: flex-start;
+  }
+
+  .readyCard p {
+    line-height: 1.45;
+  }
+
+  .joinNowButton,
+  .backButton {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .encryptedNote {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.35;
+  }
+
+  .cameraPreviewCard {
+    display: none;
+  }
+}
+
+@media (max-width: 430px) {
+  .lobbyPage {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .lobbyNav {
+    margin-bottom: 38px;
+  }
+
+  .lobbyBrandIcon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .lobbyBrand h2 {
+    font-size: 2.1rem;
+  }
+
+  .lobbyPanel {
+    max-width: 100%;
+  }
+
+  .lobbyPanel h1 {
+    font-size: 2.65rem;
+  }
+
+  .lobbyInputWrap {
+    height: 58px;
+  }
+
+  .joinNowButton,
+  .backButton {
+    height: 58px;
+  }
+}

@@ -282,12 +282,10 @@ function VideoMeet() {
     if (!window.localStream || !peerConnection) return;
 
     if (peerConnection.addTrack) {
-      const existingSenders = peerConnection.getSenders();
-
       window.localStream.getTracks().forEach((track) => {
-        const alreadyAdded = existingSenders.some(
-          (sender) => sender.track === track,
-        );
+        const alreadyAdded = peerConnection
+          .getSenders()
+          .some((sender) => sender.track === track);
 
         if (!alreadyAdded) {
           peerConnection.addTrack(track, window.localStream);
@@ -299,13 +297,18 @@ function VideoMeet() {
   };
 
   const handleRemoteStream = (socketListId, stream, roomUsers = {}) => {
-    const videoExists = videoRef.current.find(
-      (video) => video.socketId === socketListId,
-    );
+    if (!socketListId || socketListId === socketIdRef.current || !stream)
+      return;
 
-    if (videoExists) {
-      setVideos((videos) => {
-        const updatedVideos = videos.map((video) =>
+    setVideos((prevVideos) => {
+      const existingVideo = prevVideos.find(
+        (video) => video.socketId === socketListId,
+      );
+
+      let updatedVideos;
+
+      if (existingVideo) {
+        updatedVideos = prevVideos.map((video) =>
           video.socketId === socketListId
             ? {
                 ...video,
@@ -314,23 +317,20 @@ function VideoMeet() {
               }
             : video,
         );
+      } else {
+        updatedVideos = [
+          ...prevVideos,
+          {
+            socketId: socketListId,
+            stream,
+            username: roomUsers[socketListId] || "Guest",
+          },
+        ];
+      }
 
-        videoRef.current = updatedVideos;
-        return updatedVideos;
-      });
-    } else {
-      const newVideo = {
-        socketId: socketListId,
-        stream,
-        username: roomUsers[socketListId] || "Guest",
-      };
-
-      setVideos((videos) => {
-        const updatedVideos = [...videos, newVideo];
-        videoRef.current = updatedVideos;
-        return updatedVideos;
-      });
-    }
+      videoRef.current = updatedVideos;
+      return updatedVideos;
+    });
   };
 
   const replaceLocalMediaTrack = async (kind, deviceId) => {
@@ -670,41 +670,47 @@ function VideoMeet() {
 
       socketRef.current.on("user-joined", (id, clients, roomUsers = {}) => {
         clients.forEach((socketListId) => {
-          connections[socketListId] = new RTCPeerConnection(
-            peerConnectionConfig,
-          );
+          if (socketListId === socketIdRef.current) return;
+          if (!connections[socketListId]) {
+            connections[socketListId] = new RTCPeerConnection(
+              peerConnectionConfig,
+            );
 
-          connections[socketListId].onicecandidate = (event) => {
-            if (event.candidate != null) {
-              socketRef.current.emit(
-                "signal",
-                socketListId,
-                JSON.stringify({ ice: event.candidate }),
-              );
+            connections[socketListId].onicecandidate = (event) => {
+              if (event.candidate != null) {
+                socketRef.current.emit(
+                  "signal",
+                  socketListId,
+                  JSON.stringify({ ice: event.candidate }),
+                );
+              }
+            };
+
+            connections[socketListId].ontrack = (event) => {
+              const remoteStream =
+                event.streams && event.streams[0]
+                  ? event.streams[0]
+                  : new MediaStream([event.track]);
+
+              handleRemoteStream(socketListId, remoteStream, roomUsers);
+            };
+
+            connections[socketListId].onaddstream = (event) => {
+              handleRemoteStream(socketListId, event.stream, roomUsers);
+            };
+
+            if (
+              window.localStream !== undefined &&
+              window.localStream !== null
+            ) {
+              addLocalStreamToPeer(connections[socketListId]);
+            } else {
+              let blackSilence = (...args) =>
+                new MediaStream([black(...args), silence()]);
+
+              window.localStream = blackSilence();
+              addLocalStreamToPeer(connections[socketListId]);
             }
-          };
-
-          connections[socketListId].ontrack = (event) => {
-            const remoteStream =
-              event.streams && event.streams[0]
-                ? event.streams[0]
-                : new MediaStream([event.track]);
-
-            handleRemoteStream(socketListId, remoteStream, roomUsers);
-          };
-
-          connections[socketListId].onaddstream = (event) => {
-            handleRemoteStream(socketListId, event.stream, roomUsers);
-          };
-
-          if (window.localStream !== undefined && window.localStream !== null) {
-            addLocalStreamToPeer(connections[socketListId]);
-          } else {
-            let blackSilence = (...args) =>
-              new MediaStream([black(...args), silence()]);
-
-            window.localStream = blackSilence();
-            addLocalStreamToPeer(connections[socketListId]);
           }
         });
 
