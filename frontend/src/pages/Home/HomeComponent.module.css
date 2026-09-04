@@ -1,0 +1,244 @@
+.homePage {
+  min-height: 100vh;
+  padding: 30px;
+  color: #ffffff;
+  background:
+    radial-gradient(
+      circle at 16% 18%,
+      rgba(37, 99, 235, 0.18),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 84% 78%,
+      rgba(14, 165, 233, 0.1),
+      transparent 30%
+    ),
+    #020713;
+}
+
+.navbar {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brand,
+.navActions,
+.navActions button,
+.joinBox button {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  gap: 14px;
+}
+
+.brandIcon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4f7cff, #6544ff);
+}
+
+.brandIcon svg {
+  font-size: 26px;
+}
+
+.brand h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 850;
+}
+
+.navActions {
+  gap: 12px;
+}
+
+.navActions button {
+  min-height: 44px;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.5);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hero {
+  max-width: 1180px;
+  min-height: calc(100vh - 108px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 520px) minmax(360px, 520px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 56px;
+}
+
+.eyebrow {
+  margin: 0 0 20px;
+  color: #6877ff;
+  font-size: 0.82rem;
+  font-weight: 850;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.content h1 {
+  margin: 0;
+  font-size: clamp(3rem, 5.6vw, 5.2rem);
+  line-height: 1;
+  font-weight: 900;
+}
+
+.subtitle {
+  max-width: 500px;
+  margin: 22px 0 0;
+  color: #cbd5e1;
+  font-size: 1.08rem;
+  line-height: 1.6;
+}
+
+.joinBox {
+  height: 62px;
+  margin-top: 34px;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 8px;
+  background: rgba(5, 10, 24, 0.64);
+}
+
+.joinBox input {
+  min-width: 0;
+  flex: 1;
+  padding: 0 20px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #ffffff;
+  font: inherit;
+}
+
+.joinBox button {
+  min-width: 140px;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  background: linear-gradient(135deg, #3568ff, #6544ff);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.joinBox button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.56);
+}
+
+.previewTile {
+  position: relative;
+  min-height: 170px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  background: linear-gradient(145deg, #172236, #101827);
+}
+
+.previewTile:first-child {
+  grid-column: 1 / -1;
+}
+
+.previewTile span {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #4f46e5);
+  font-size: 2.2rem;
+  font-weight: 900;
+}
+
+.previewTile p {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(2, 6, 23, 0.72);
+  font-weight: 750;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    padding: 70px 0 30px;
+  }
+
+  .preview {
+    max-width: 620px;
+  }
+}
+
+@media (max-width: 560px) {
+  .homePage {
+    padding: 22px 18px;
+  }
+
+  .navbar,
+  .navActions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .navActions,
+  .navActions button {
+    width: 100%;
+  }
+
+  .navActions button {
+    justify-content: center;
+  }
+
+  .joinBox {
+    height: auto;
+    flex-direction: column;
+  }
+
+  .joinBox input,
+  .joinBox button {
+    min-height: 54px;
+  }
+
+  .preview {
+    grid-template-columns: 1fr;
+  }
+
+  .previewTile:first-child {
+    grid-column: auto;
+  }
+}

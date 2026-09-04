@@ -1,72 +1,100 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, IconButton, TextField } from "@mui/material";
 import RestoreIcon from "@mui/icons-material/Restore";
-import "../../App.css";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import withAuth from "../../utils/withAuth";
 import { useAuth } from "../../contexts/AuthContext";
+import styles from "./HomeComponent.module.css";
 
 function HomeComponent() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const [meetingCode, setMeetingCode] = useState("");
-
   const { addToUserHistory } = useAuth();
-  let handleJoinVideoCall = async () => {
-    await addToUserHistory(meetingCode);
-    navigate(`/${meetingCode}`);
+
+  const handleJoinVideoCall = async () => {
+    const code = meetingCode.trim();
+
+    if (!code) {
+      return;
+    }
+
+    await addToUserHistory(code);
+    navigate(`/${code}`);
   };
 
   return (
-    <>
-      <div className="navBar">
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <h2>Apna Zoom</h2>
+    <main className={styles.homePage}>
+      <nav className={styles.navbar}>
+        <div className={styles.brand}>
+          <span className={styles.brandIcon}>
+            <VideocamIcon />
+          </span>
+          <h2>MeetLink</h2>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <IconButton
-            onClick={() => {
-              navigate("/history");
-            }}
-          >
+        <div className={styles.navActions}>
+          <button onClick={() => navigate("/history")}>
             <RestoreIcon />
-          </IconButton>
-          <p>History</p>
+            <span>History</span>
+          </button>
 
-          <Button
+          <button
             onClick={() => {
               localStorage.removeItem("token");
               navigate("/auth");
             }}
           >
-            Logout
-          </Button>
+            <LogoutIcon />
+            <span>Logout</span>
+          </button>
         </div>
-      </div>
+      </nav>
 
-      <div className="meetContainer">
-        <div className="leftPanel">
-          <div>
-            <h2>Providing Quality Video Call Just Like Quality Education</h2>
+      <section className={styles.hero}>
+        <div className={styles.content}>
+          <p className={styles.eyebrow}>Secure video meetings</p>
+          <h1>Start or join your meeting instantly.</h1>
+          <p className={styles.subtitle}>
+            Enter a meeting code to connect with your team, class, or friends in
+            a clean video workspace.
+          </p>
 
-            <div style={{ display: "flex", gap: "10px" }}>
-              <TextField
-                onChange={(e) => setMeetingCode(e.target.value)}
-                id="outlined-basic"
-                label="Meeting Code"
-                variant="outlined"
-              />
-              <Button onClick={handleJoinVideoCall} variant="contained">
-                Join
-              </Button>
-            </div>
+          <div className={styles.joinBox}>
+            <input
+              value={meetingCode}
+              onChange={(e) => setMeetingCode(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleJoinVideoCall();
+              }}
+              placeholder="Enter meeting code"
+            />
+            <button
+              disabled={!meetingCode.trim()}
+              onClick={handleJoinVideoCall}
+            >
+              Join <ArrowForwardIcon />
+            </button>
           </div>
         </div>
-        <div className="rightPanel">
-          <img srcSet="/logo3.png" alt="" />
+
+        <div className={styles.preview}>
+          <div className={styles.previewTile}>
+            <span>A</span>
+            <p>You</p>
+          </div>
+          <div className={styles.previewTile}>
+            <span>S</span>
+            <p>Sarah</p>
+          </div>
+          <div className={styles.previewTile}>
+            <span>J</span>
+            <p>John</p>
+          </div>
         </div>
-      </div>
-    </>
+      </section>
+    </main>
   );
 }
 

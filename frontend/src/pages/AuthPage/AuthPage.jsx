@@ -23,7 +23,7 @@ export default function AuthPage() {
       });
 
       if (success) {
-        navigate("/video-meet");
+        navigate("/home");
       }
     } else {
       await register({
