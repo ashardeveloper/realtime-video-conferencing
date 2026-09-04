@@ -16,6 +16,34 @@ app.use(express.json({ limit: "40kb" }));
 app.use(express.urlencoded({ limit: "40kb", extended: true }));
 
 app.use("/api/v1/users", userRoutes);
+app.get("/api/v1/turn-credentials", async (req, res) => {
+  try {
+    const appName = process.env.METERED_APP_NAME;
+    const apiKey = process.env.METERED_API_KEY;
+
+    if (!appName || !apiKey) {
+      return res.status(200).json({
+        iceServers: [{ urls: "stun:stun.relay.metered.ca:80" }],
+      });
+    }
+
+    const response = await fetch(
+      `https://${appName}.metered.live/api/v1/turn/credentials?apiKey=${apiKey}`,
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch TURN credentials");
+    }
+
+    const iceServers = await response.json();
+
+    return res.status(200).json({ iceServers });
+  } catch (error) {
+    return res.status(200).json({
+      iceServers: [{ urls: "stun:stun.relay.metered.ca:80" }],
+    });
+  }
+});
 
 app.get("/home", (req, res) => {
   return res.json({ hello: "World" });

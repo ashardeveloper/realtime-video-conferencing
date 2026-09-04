@@ -33,31 +33,8 @@ const server_url = `${server}`;
 
 var connections = {};
 
-const iceServers = [
-  {
-    urls: process.env.REACT_APP_STUN_URL || "stun:stun.l.google.com:19302",
-  },
-];
-
-const turnUrls = [
-  process.env.REACT_APP_TURN_URL,
-  process.env.REACT_APP_TURNS_URL,
-].filter(Boolean);
-
-if (
-  turnUrls.length > 0 &&
-  process.env.REACT_APP_TURN_USERNAME &&
-  process.env.REACT_APP_TURN_CREDENTIAL
-) {
-  iceServers.push({
-    urls: turnUrls,
-    username: process.env.REACT_APP_TURN_USERNAME,
-    credential: process.env.REACT_APP_TURN_CREDENTIAL,
-  });
-}
-
-const peerConnectionConfig = {
-  iceServers,
+let peerConnectionConfig = {
+  iceServers: [{ urls: "stun:stun.relay.metered.ca:80" }],
   iceTransportPolicy: "all",
 };
 
@@ -205,6 +182,22 @@ function VideoMeet() {
     window.location.pathname.replace("/", ""),
   );
 
+  const loadTurnCredentials = async () => {
+    try {
+      const response = await fetch(`${server_url}/api/v1/turn-credentials`);
+      const data = await response.json();
+
+      if (Array.isArray(data.iceServers) && data.iceServers.length > 0) {
+        peerConnectionConfig = {
+          iceServers: data.iceServers,
+          iceTransportPolicy: "all",
+        };
+      }
+    } catch (error) {
+      console.log("Using fallback STUN server.", error);
+    }
+  };
+
   const stopLobbyPreview = () => {
     if (lobbyStreamRef.current) {
       lobbyStreamRef.current.getTracks().forEach((track) => track.stop());
@@ -283,6 +276,61 @@ function VideoMeet() {
         sender.replaceTrack(newTrack);
       }
     });
+  };
+
+  const addLocalStreamToPeer = (peerConnection) => {
+    if (!window.localStream || !peerConnection) return;
+
+    if (peerConnection.addTrack) {
+      const existingSenders = peerConnection.getSenders();
+
+      window.localStream.getTracks().forEach((track) => {
+        const alreadyAdded = existingSenders.some(
+          (sender) => sender.track === track,
+        );
+
+        if (!alreadyAdded) {
+          peerConnection.addTrack(track, window.localStream);
+        }
+      });
+    } else if (peerConnection.addStream) {
+      peerConnection.addStream(window.localStream);
+    }
+  };
+
+  const handleRemoteStream = (socketListId, stream, roomUsers = {}) => {
+    const videoExists = videoRef.current.find(
+      (video) => video.socketId === socketListId,
+    );
+
+    if (videoExists) {
+      setVideos((videos) => {
+        const updatedVideos = videos.map((video) =>
+          video.socketId === socketListId
+            ? {
+                ...video,
+                stream,
+                username: roomUsers[socketListId] || video.username || "Guest",
+              }
+            : video,
+        );
+
+        videoRef.current = updatedVideos;
+        return updatedVideos;
+      });
+    } else {
+      const newVideo = {
+        socketId: socketListId,
+        stream,
+        username: roomUsers[socketListId] || "Guest",
+      };
+
+      setVideos((videos) => {
+        const updatedVideos = [...videos, newVideo];
+        videoRef.current = updatedVideos;
+        return updatedVideos;
+      });
+    }
   };
 
   const replaceLocalMediaTrack = async (kind, deviceId) => {
@@ -406,7 +454,7 @@ function VideoMeet() {
     for (let id in connections) {
       if (id === socketIdRef.current) continue;
 
-      connections[id].addStream(window.localStream);
+      addLocalStreamToPeer(connections[id]);
 
       connections[id].createOffer().then((description) => {
         connections[id]
@@ -636,52 +684,27 @@ function VideoMeet() {
             }
           };
 
+          connections[socketListId].ontrack = (event) => {
+            const remoteStream =
+              event.streams && event.streams[0]
+                ? event.streams[0]
+                : new MediaStream([event.track]);
+
+            handleRemoteStream(socketListId, remoteStream, roomUsers);
+          };
+
           connections[socketListId].onaddstream = (event) => {
-            let videoExists = videoRef.current.find(
-              (video) => video.socketId === socketListId,
-            );
-
-            if (videoExists) {
-              setVideos((videos) => {
-                const updatedVideos = videos.map((video) =>
-                  video.socketId === socketListId
-                    ? {
-                        ...video,
-                        stream: event.stream,
-                        username:
-                          roomUsers[socketListId] || video.username || "Guest",
-                      }
-                    : video,
-                );
-
-                videoRef.current = updatedVideos;
-                return updatedVideos;
-              });
-            } else {
-              let newVideo = {
-                socketId: socketListId,
-                stream: event.stream,
-                username: roomUsers[socketListId] || "Guest",
-                autoPlay: true,
-                playsinline: true,
-              };
-
-              setVideos((videos) => {
-                const updatedVideos = [...videos, newVideo];
-                videoRef.current = updatedVideos;
-                return updatedVideos;
-              });
-            }
+            handleRemoteStream(socketListId, event.stream, roomUsers);
           };
 
           if (window.localStream !== undefined && window.localStream !== null) {
-            connections[socketListId].addStream(window.localStream);
+            addLocalStreamToPeer(connections[socketListId]);
           } else {
             let blackSilence = (...args) =>
               new MediaStream([black(...args), silence()]);
 
             window.localStream = blackSilence();
-            connections[socketListId].addStream(window.localStream);
+            addLocalStreamToPeer(connections[socketListId]);
           }
         });
 
@@ -690,7 +713,7 @@ function VideoMeet() {
             if (id2 === socketIdRef.current) continue;
 
             try {
-              connections[id2].addStream(window.localStream);
+              addLocalStreamToPeer(connections[id2]);
             } catch (err) {}
 
             connections[id2].createOffer().then((description) => {
@@ -742,6 +765,7 @@ function VideoMeet() {
     }
 
     setAskForUsername(false);
+    await loadTurnCredentials();
     getMedia(displayName);
   };
 
@@ -792,7 +816,7 @@ function VideoMeet() {
     for (let id in connections) {
       if (id === socketIdRef.current) continue;
 
-      connections[id].addStream(window.localStream);
+      addLocalStreamToPeer(connections[id]);
 
       connections[id].createOffer().then((description) => {
         connections[id]
