@@ -60,9 +60,17 @@ MeetLink solves these issues by combining a Socket.IO signaling server with WebR
 
 ## Screenshots
 
+### MeetLink
+
+![MeetLink](docs/screenshots/meetlink.png)
+
 ### Landing Page
 
 ![Landing Page](docs/screenshots/landingpage.png)
+
+### Meeting History
+
+![Meeting History](docs/screenshots/meetinghistory.png)
 
 ### Login & Signup
 
@@ -75,10 +83,6 @@ MeetLink solves these issues by combining a Socket.IO signaling server with WebR
 ### Meeting Room
 
 ![Meeting Room](docs/screenshots/meetingroom.png)
-
-### Meeting History
-
-![Meeting History](docs/screenshots/meetinghistory.png)
 
 ## Tech Stack
 
