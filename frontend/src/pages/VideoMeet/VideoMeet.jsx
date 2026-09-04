@@ -572,13 +572,15 @@ function VideoMeet() {
   };
 
   let connectToSocketServer = (displayName) => {
-    socketRef.current = io.connect(server_url, { secure: false });
+    socketRef.current = io.connect(server_url, {
+      transports: ["websocket", "polling"],
+    });
 
     socketRef.current.on("signal", gotMessageFromServer);
 
     socketRef.current.on("connect", () => {
       socketRef.current.emit("join-call", {
-        path: window.location.href,
+        path: meetingCode,
         username: displayName || username || "Guest",
       });
 

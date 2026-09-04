@@ -34,7 +34,9 @@ export const connectToSocket = (server) => {
         users[path] = {};
       }
 
-      connections[path].push(socket.id);
+      if (!connections[path].includes(socket.id)) {
+        connections[path].push(socket.id);
+      }
       users[path][socket.id] = username;
       timeOnline[socket.id] = new Date();
 
