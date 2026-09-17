@@ -37,27 +37,6 @@ MeetLink started as a Zoom-style video conferencing project and was redesigned i
 - TURN/STUN support for more reliable mobile-to-laptop WebRTC connections
 - SPA routing support for deployed frontend links
 
-## Case Study
-
-### Problem
-
-Basic WebRTC video meeting apps often work locally but fail across mobile data, different Wi-Fi networks, or deployed environments. They also commonly suffer from poor responsive layout, duplicate video tiles, black video states, chat flickering, and unreliable participant cleanup.
-
-### Solution
-
-MeetLink solves these issues by combining a Socket.IO signaling server with WebRTC peer connections, TURN/STUN support, responsive UI layouts, real media controls, device selection, participant state syncing, and clean disconnect handling.
-
-### Engineering Focus
-
-- Stable WebRTC peer connection handling
-- Duplicate stream prevention
-- Remote media state synchronization
-- Mobile-to-desktop connectivity using TURN
-- Responsive meeting room layouts
-- Clean UX for camera/mic permissions
-- Production deployment compatibility on Render
-- Protected history and authentication flows
-
 ## Screenshots
 
 ### MeetLink
@@ -83,6 +62,27 @@ MeetLink solves these issues by combining a Socket.IO signaling server with WebR
 ### Meeting Room
 
 ![Meeting Room](docs/screenshots/meetingroom.png)
+
+## Case Study
+
+### Problem
+
+Basic WebRTC video meeting apps often work locally but fail across mobile data, different Wi-Fi networks, or deployed environments. They also commonly suffer from poor responsive layout, duplicate video tiles, black video states, chat flickering, and unreliable participant cleanup.
+
+### Solution
+
+MeetLink solves these issues by combining a Socket.IO signaling server with WebRTC peer connections, TURN/STUN support, responsive UI layouts, real media controls, device selection, participant state syncing, and clean disconnect handling.
+
+### Engineering Focus
+
+- Stable WebRTC peer connection handling
+- Duplicate stream prevention
+- Remote media state synchronization
+- Mobile-to-desktop connectivity using TURN
+- Responsive meeting room layouts
+- Clean UX for camera/mic permissions
+- Production deployment compatibility on Render
+- Protected history and authentication flows
 
 ## Tech Stack
 
