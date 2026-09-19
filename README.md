@@ -1,4 +1,4 @@
-# MeetLink
+# MeetLink│Real-Time Video Conferencing
 
 MeetLink is a full-stack real-time video meeting application built with React, Node.js, Express, Socket.IO, MongoDB, and WebRTC. It allows users to create or join meetings by code, preview their camera before joining, chat during meetings, switch audio/video devices, and use a responsive meeting room UI across desktop, tablet, and mobile.
 
